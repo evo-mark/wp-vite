@@ -1,0 +1,18 @@
+{
+    "name": "southcoastweb/wordpress-vite",
+    "type": "wp-plugin",
+    "license": "None",
+    "autoload": {
+        "psr-4": {
+            "Southcoastweb\\WordpressVite\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Craig Riley"
+        }
+    ],
+    "require-dev": {
+        "symfony/var-dumper": "^6.2"
+    }
+}
