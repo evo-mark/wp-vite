@@ -20,7 +20,7 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 WpVite::run();
 $updater = PucFactory::buildUpdateChecker(
-    'https://github.com/southcoastweb/wp-vite.git',
+    'https://github.com/southcoastweb/wp-vite/',
     __FILE__,
     'wp-vite'
 );
