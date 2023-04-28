@@ -1,6 +1,6 @@
 <?php
 
-namespace Southcoastweb\WordpressVite;
+namespace Southcoastweb\WpVite;
 
 class WpVite
 {
@@ -19,7 +19,7 @@ class WpVite
         self::setupFilters();
     }
 
-    public static function getVite(): Vite
+    public static function getVite(): ViteAdapter
     {
         return self::$vite;
     }
@@ -37,7 +37,7 @@ class WpVite
         self::validateArgs($args);
 
 
-        self::$vite = new Vite([
+        self::$vite = new ViteAdapter([
             'uploadsPath' => $uploadsPath,
             'uploadsUrl' => $uploadsUrl,
             'hotFile' => $args['hotFile'] ?? 'hot',

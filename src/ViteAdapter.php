@@ -1,11 +1,11 @@
 <?php
 
-namespace Southcoastweb\WordpressVite;
+namespace Southcoastweb\WpVite;
 
 use DOMDocument;
 use Exception;
 
-class Vite
+class ViteAdapter
 {
     /**
      * Initial config for the instance
@@ -94,7 +94,7 @@ class Vite
     /**
      * Use the given key to detect integrity hashes in the manifest.
      */
-    public function useIntegrityKey(string|false $key): Vite
+    public function useIntegrityKey(string|false $key): ViteAdapter
     {
         $this->integrityKey = $key;
 
@@ -104,7 +104,7 @@ class Vite
     /**
      * Set the Vite entry points.
      */
-    public function withEntryPoints(array $entryPoints): Vite
+    public function withEntryPoints(array $entryPoints): ViteAdapter
     {
         $this->entryPoints = $entryPoints;
 
@@ -114,7 +114,7 @@ class Vite
     /**
      * Set the filename for the manifest file.
      */
-    public function useManifestFilename(string $filename): Vite
+    public function useManifestFilename(string $filename): ViteAdapter
     {
         $this->manifestFilename = $filename;
 
@@ -132,7 +132,7 @@ class Vite
     /**
      * Set the Vite "hot" file path.
      */
-    public function useHotFile(string $path): Vite
+    public function useHotFile(string $path): ViteAdapter
     {
         $this->hotFile = $path;
 
@@ -142,7 +142,7 @@ class Vite
     /**
      * Set the Vite build directory.
      */
-    public function useBuildDirectory(string $path): Vite
+    public function useBuildDirectory(string $path): ViteAdapter
     {
         $this->buildDirectory = $path;
 
@@ -152,7 +152,7 @@ class Vite
     /**
      * Use the given callback to resolve attributes for script tags.
      */
-    public function useScriptTagAttributes(callable|array $attributes): Vite
+    public function useScriptTagAttributes(callable|array $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
             $attributes = fn () => $attributes;
@@ -166,7 +166,7 @@ class Vite
     /**
      * Use the given callback to resolve attributes for style tags.
      */
-    public function useStyleTagAttributes(callable|array $attributes): Vite
+    public function useStyleTagAttributes(callable|array $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
             $attributes = fn () => $attributes;
@@ -180,7 +180,7 @@ class Vite
     /**
      * Use the given callback to resolve attributes for preload tags.
      */
-    public function usePreloadTagAttributes(callable|array|false $attributes): Vite
+    public function usePreloadTagAttributes(callable|array|false $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
             $attributes = fn () => $attributes;

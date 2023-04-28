@@ -1,6 +1,6 @@
 <?php
 
-namespace Southcoastweb\WordpressVite;
+namespace Southcoastweb\WpVite;
 
 class ViteConfig
 {
