@@ -16,7 +16,7 @@ class ComposerStaticInit9c0366bc93e0334d0961479f7de4f041
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Component\\VarDumper\\' => 28,
-            'Southcoastweb\\ViteHmr\\' => 22,
+            'Southcoastweb\\WordpressVite\\' => 28,
         ),
     );
 
@@ -29,7 +29,7 @@ class ComposerStaticInit9c0366bc93e0334d0961479f7de4f041
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Southcoastweb\\ViteHmr\\' => 
+        'Southcoastweb\\WordpressVite\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

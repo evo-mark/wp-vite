@@ -8,5 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Component\\VarDumper\\' => array($vendorDir . '/symfony/var-dumper'),
-    'Southcoastweb\\ViteHmr\\' => array($baseDir . '/src'),
+    'Southcoastweb\\WordpressVite\\' => array($baseDir . '/src'),
 );

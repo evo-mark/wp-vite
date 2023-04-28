@@ -2,6 +2,7 @@
 
 namespace Southcoastweb\WordpressVite;
 
+use DOMDocument;
 use Exception;
 
 class Vite
@@ -297,7 +298,30 @@ class Vite
         usort($preloads, fn ($args) => $this->isCssPath($args[1]));
         $preloads = array_map(fn ($args) => $this->makePreloadTagForChunk(...$args), $preloads);
 
-        return implode("", $preloads) . implode("", $stylesheets) . implode("", $scripts);
+        $this->enqueueScripts($scripts);
+
+        return implode("\n", $preloads) . "\n" . implode("\n", $stylesheets) . "\n"; // . implode("\n", $scripts) . "\n";
+    }
+
+    public function enqueueScripts(array $scripts)
+    {
+        foreach ($scripts as $script) {
+            $attributes = [];
+            $dom = new DOMDocument();
+            $dom->loadHTML($script);
+            $node = $dom->getElementsByTagName('script');
+            foreach ($node->item(0)->attributes as $key => $obj) {
+                $attributes[$key] = $obj->value;
+            }
+            $handle = array_pop(explode("/", $attributes['src']));
+            $handle = str_replace(".js", "-js", $handle);
+            wp_register_script($handle, $attributes['src'], array(), false, true);
+            unset($attributes['src']);
+            wp_enqueue_script($handle);
+            foreach ($attributes as $attr => $val) {
+                wp_scripts()->add_data($handle, $attr, $val);
+            }
+        }
     }
 
     /**
@@ -450,7 +474,6 @@ class Vite
         if (!isset($manifest[$file])) {
             throw new Exception("Unable to locate file in Vite manifest: {$file}.");
         }
-
         return $manifest[$file];
     }
 
@@ -483,7 +506,6 @@ class Vite
      */
     protected function assetPath(string $path, bool $secure = null): string
     {
-
         return $this->config->uploadsUrl . '/' . $path;
     }
 
