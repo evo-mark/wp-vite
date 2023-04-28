@@ -34,13 +34,14 @@ class WpVite
             throw new \Exception("Directory \"" . $uploadsPath . "\" could not be found");
         }
 
-        $isValid = self::validateArgs($args);
+        self::validateArgs($args);
 
 
         self::$vite = new Vite([
             'uploadsPath' => $uploadsPath,
             'uploadsUrl' => $uploadsUrl,
-            'hotFile' => $args['hotFile'] ?? 'hot'
+            'hotFile' => $args['hotFile'] ?? 'hot',
+            'dependencies' => $args['dependencies'] ?? []
         ]);
 
         add_action('wp_head', function () use ($buildDirectory, $args) {

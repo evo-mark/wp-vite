@@ -315,7 +315,7 @@ class Vite
             }
             $handle = array_pop(explode("/", $attributes['src']));
             $handle = str_replace(".js", "-js", $handle);
-            wp_register_script($handle, $attributes['src'], array(), false, true);
+            wp_register_script($handle, $attributes['src'], $this->config->dependencies, false, true);
             unset($attributes['src']);
             wp_enqueue_script($handle);
             foreach ($attributes as $attr => $val) {
