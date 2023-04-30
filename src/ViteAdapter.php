@@ -211,6 +211,7 @@ class ViteAdapter
         }
 
         $manifest = $this->manifest($buildDirectory);
+        $manifestHash = hash('md5', json_encode($manifest));
 
         $tags = [];
         $preloads = [];
@@ -298,12 +299,13 @@ class ViteAdapter
         usort($preloads, fn ($args) => $this->isCssPath($args[1]));
         $preloads = array_map(fn ($args) => $this->makePreloadTagForChunk(...$args), $preloads);
 
-        $this->enqueueScripts($scripts);
+        $this->enqueueScripts($scripts, $manifestHash);
+        $this->enqueueStylesheets($stylesheets, $manifestHash);
 
-        return implode("\n", $preloads) . "\n" . implode("\n", $stylesheets) . "\n"; // . implode("\n", $scripts) . "\n";
+        return implode("\n", $preloads) . "\n";
     }
 
-    public function enqueueScripts(array $scripts)
+    public function enqueueScripts(array $scripts, string $hash)
     {
         foreach ($scripts as $script) {
             $attributes = [];
@@ -315,12 +317,28 @@ class ViteAdapter
             }
             $handle = array_pop(explode("/", $attributes['src']));
             $handle = str_replace(".js", "-js", $handle);
-            wp_register_script($handle, $attributes['src'], $this->config->dependencies, false, true);
+            wp_register_script($handle, $attributes['src'], $this->config->dependencies, $hash, true);
             unset($attributes['src']);
             wp_enqueue_script($handle);
             foreach ($attributes as $attr => $val) {
                 wp_scripts()->add_data($handle, $attr, $val);
             }
+        }
+    }
+
+    public function enqueueStylesheets(array $styles, string $hash)
+    {
+        foreach ($styles as $style) {
+            $attributes = [];
+            $dom = new DOMDocument();
+            $dom->loadHTML($style);
+            $node = $dom->getElementsByTagName('link');
+            foreach ($node->item(0)->attributes as $key => $obj) {
+                $attributes[$key] = $obj->value;
+            }
+            $handle = array_pop(explode("/", $attributes['href']));
+            $handle = str_replace(".css", "-css", $handle);
+            wp_enqueue_style($handle, $attributes['href'], array(), $hash);
         }
     }
 
@@ -514,6 +532,9 @@ class ViteAdapter
      */
     protected function makePreloadTagForChunk(string $src, string $url, array $chunk, array $manifest): string
     {
+        $manifestHash = hash('md5', json_encode($manifest));
+        $url .= "?ver=" . $manifestHash;
+
         $attributes = $this->resolvePreloadTagAttributes($src, $url, $chunk, $manifest);
 
         if ($attributes === false) {

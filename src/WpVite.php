@@ -70,9 +70,14 @@ class WpVite
         add_filter('script_loader_tag', [__CLASS__, 'addScriptAttributes'], 10, 2);
     }
 
+    /**
+     * Remove deprecated script/link attributes and add attributes from registered sources
+     *
+     * @filter script_loader_tag
+     */
     public static function addScriptAttributes(string $tag, string $handle): string
     {
-        $attributes = ['type'];
+        $attributes = ['type', 'async', 'crossorigin', 'defer', 'fetchpriority', 'integrity', 'nomodule', 'nonce', 'referrerpolicy', 'blocking'];
         $tag = preg_replace("/type=['\"]text\/(javascript|css)['\"]/", '', $tag);
         foreach ($attributes as $attribute) {
             $data = wp_scripts()->get_data($handle, $attribute);

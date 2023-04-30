@@ -1,7 +1,7 @@
 {
   "name": "southcoastweb/wp-vite",
-  "type": "wp-plugin",
-  "license": "None",
+  "type": "wordpress-plugin",
+  "license": "MIT",
   "autoload": {
     "psr-4": {
       "Southcoastweb\\WpVite\\": "src/"

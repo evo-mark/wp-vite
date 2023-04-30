@@ -4,7 +4,7 @@
  * Plugin Name: WP Vite
  * Plugin URI: https://southcoastweb.co.uk
  * Description: Vite support for Wordpress themes and plugins
- * Version: 1.0.0
+ * Version: 0.1.0
  * Author: southcoastweb
  * Author URI: https://southcoastweb.co.uk
  * License: None
