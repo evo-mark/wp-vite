@@ -32,5 +32,8 @@ Answer to foo bar dilemma.
 
 == Changelog ==
 
+= 0.2.0 =
+* Added version cache-busting to both scripts and styles
+
 = 0.1.0 =
 * Initial release
