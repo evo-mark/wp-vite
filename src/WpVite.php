@@ -44,7 +44,9 @@ class WpVite
             'dependencies' => $args['dependencies'] ?? []
         ]);
 
-        add_action('wp_head', function () use ($buildDirectory, $args) {
+        $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
+
+        add_action($hook, function () use ($buildDirectory, $args) {
             $inputs = is_array($args['input']) ? $args['input'] : (array) $args['input'];
             if (count($inputs) === 0) {
                 throw new \Exception("No valid input files received");

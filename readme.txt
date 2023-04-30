@@ -17,13 +17,9 @@ Markdown parsed.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Does this work with Gutenberg block development? =
 
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
+No. This plugin currently only supports 
 
 == Screenshots ==
 
