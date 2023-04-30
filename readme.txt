@@ -14,14 +14,14 @@ Bring Vite's lightning fast build process to your Wordpress theme or plugin
 
 Inside your plugin entry file or function.php file (for themes) simply include the following:
 
-```php
-use Southcoastweb\WpVite\WpVite;
 
-WpVite::enqueue([
-    'namespace' => 'theme-vite',
-    'input' => ["src/main.js"],
-]);
-```
+    use Southcoastweb\WpVite\WpVite;
+
+    WpVite::enqueue([
+        'namespace' => 'theme-vite',
+        'input' => ["src/main.js"],
+    ]);
+
 
 The enqueue function takes a single associative array as a parameter. Here are the properties it can contain:
 
@@ -39,36 +39,3 @@ The enqueue function takes a single associative array as a parameter. Here are t
 = Does this work with Gutenberg block development? =
 
 No. This plugin currently does not support usage in the development of block libraries. For that, we recommend [Vite Plugin Gutenberg Blocks](https://github.com/southcoastweb/vite-plugin-gutenberg-blocks).
-
-== Screenshots ==
-
-![Screenshot](/assets/screenshot-1.png)
-1. Using Vite with Wordpress
-
-== Changelog ==
-
-= 0.2.4 =
-
-- Readme fixes for params
-
-= 0.2.3 =
-
-- Added version to entry file
-- Attempt fix for param table
-
-= 0.2.2 =
-
-- Screenshot added to assets
-- Updated readme file
-
-= 0.2.1 =
-
-- Added 'admin' param for loading scripts on admin pages
-
-= 0.2.0 =
-
-- Added version cache-busting to both scripts and styles
-
-= 0.1.0 =
-
-- Initial release
