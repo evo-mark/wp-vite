@@ -10,14 +10,29 @@ Bring Vite's lightning fast build process to your Wordpress theme or plugin
 
 == Description ==
 
-= Params =
+= Usage =
 
-  | Param        | Type          | Default | Description                                                                                           |
-  | ------------ | ------------- | ------- | ----------------------------------------------------------------------------------------------------- |
-  | namespace    | string        | <empty> | A unique namespace for the manifest being enqueued (required)                                         |
-  | input        | array, string | none    | One or more entry files. These must match exactly the ones defined in your Vite config file           |
-  | dependencies | string[]      | []      | Wordpress JS dependencies for your manifest. In production, these will be mapped to the window object |
-  | admin        | bool          | false   | Enqueue the inputs for Wordpress admin pages instead of frontend                                      |
+Inside your plugin entry file or function.php file (for themes) simply include the following:
+
+```php
+use Southcoastweb\WpVite\WpVite;
+
+WpVite::enqueue([
+    'namespace' => 'theme-vite',
+    'input' => ["src/main.js"],
+]);
+```
+
+The enqueue function takes a single associative array as a parameter. Here are the properties it can contain:
+
+1. namespace: string **Required**
+-  A unique namespace for the manifest being enqueued
+2. input: string | string[] **Required**
+-  One or more entry files. These must match exactly the ones defined in your Vite config file
+3. dependencies: string[]
+-  Wordpress JS dependencies for your manifest. In production, these will be mapped to the window object
+4. admin: bool
+-  Enqueue the inputs for Wordpress admin pages instead of frontend
 
 == Frequently Asked Questions ==
 
@@ -27,9 +42,14 @@ No. This plugin currently does not support usage in the development of block lib
 
 == Screenshots ==
 
+![Screenshot](/assets/screenshot-1.png)
 1. Using Vite with Wordpress
 
 == Changelog ==
+
+= 0.2.4 =
+
+- Readme fixes for params
 
 = 0.2.3 =
 
