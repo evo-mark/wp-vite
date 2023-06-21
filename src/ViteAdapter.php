@@ -296,7 +296,7 @@ class ViteAdapter
         $preloadsJson = array_unique($preloadsJson);
         $preloads = array_map(fn ($pre) => json_decode($pre, true), $preloadsJson);
 
-        usort($preloads, fn ($args) => $this->isCssPath($args[1]));
+        usort($preloads, fn ($args) => $this->isCssPath($args[1]) ? 1 : -1);
         $preloads = array_map(fn ($args) => $this->makePreloadTagForChunk(...$args), $preloads);
 
         $this->enqueueScripts($scripts, $manifestHash);
@@ -315,7 +315,8 @@ class ViteAdapter
             foreach ($node->item(0)->attributes as $key => $obj) {
                 $attributes[$key] = $obj->value;
             }
-            $handle = array_pop(explode("/", $attributes['src']));
+            $attributesArray = explode("/", $attributes['src']);
+            $handle = array_pop($attributesArray);
             $handle = str_replace(".js", "-js", $handle);
             wp_register_script($handle, $attributes['src'], $this->config->dependencies, $hash, true);
             unset($attributes['src']);
@@ -336,7 +337,8 @@ class ViteAdapter
             foreach ($node->item(0)->attributes as $key => $obj) {
                 $attributes[$key] = $obj->value;
             }
-            $handle = array_pop(explode("/", $attributes['href']));
+            $hrefArray = explode("/", $attributes['href']);
+            $handle = array_pop($hrefArray);
             $handle = str_replace(".css", "-css", $handle);
             wp_enqueue_style($handle, $attributes['href'], array(), $hash);
         }

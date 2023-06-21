@@ -17,7 +17,8 @@ Inside your plugin entry file or function.php file (for themes) simply include t
 
     use Southcoastweb\WpVite\WpVite;
 
-    WpVite::enqueue([
+    $vite = new WpVite;
+    $vite->enqueue([
         'namespace' => 'theme-vite',
         'input' => ["src/main.js"],
     ]);

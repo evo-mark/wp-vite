@@ -1,3 +1,8 @@
+### 0.3.1
+
+- Refactored usort functions to use integer returns
+- Fixed instances of function values being passed to functions that require a reference
+
 ### 0.3.0
 
 - **BREAKING CHANGE**: Changed the entry class (WpVite) into an instantiable class rather than static since the latter broke multiple uses of the enqueue function
