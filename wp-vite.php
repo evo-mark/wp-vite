@@ -4,7 +4,7 @@
  * Plugin Name: WP Vite
  * Plugin URI: https://southcoastweb.co.uk
  * Description: Vite support for Wordpress themes and plugins
- * Version: 0.2.5
+ * Version: 0.3.0
  * Author: southcoastweb
  * Author URI: https://southcoastweb.co.uk
  * License: None
@@ -15,10 +15,8 @@
 
 require_once "vendor/autoload.php";
 
-use Southcoastweb\WpVite\WpVite;
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-WpVite::run();
 $updater = PucFactory::buildUpdateChecker(
     'https://github.com/southcoastweb/wp-vite/',
     __FILE__,

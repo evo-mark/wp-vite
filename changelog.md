@@ -1,3 +1,9 @@
+### 0.3.0
+
+- **BREAKING CHANGE**: Changed the entry class (WpVite) into an instantiable class rather than static since the latter broke multiple uses of the enqueue function
+- Removed call to `run` from the plugin entry. Setup is now done when you instantiate the class for the first time
+- Added static `$init` property to ensure that the script tag filter is only applied once.
+
 ### 0.2.5
 
 - Renamed assets banner

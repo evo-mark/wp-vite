@@ -4,40 +4,41 @@ namespace Southcoastweb\WpVite;
 
 class WpVite
 {
-    public static $type;
-    public static $vite;
-    public static $uploadsPath;
-    public static $uploadsUrl;
+    public $type;
+    public $vite;
+    public $uploadsPath;
+    public $uploadsUrl;
+    public static $init = false;
 
-    public static function run()
+    public function __construct()
     {
-        self::$uploadsPath  = wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'scw-vite-hmr';
-        self::$uploadsUrl  = wp_upload_dir()['baseurl'] . '/' . 'scw-vite-hmr';
+        $this->uploadsPath  = wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'scw-vite-hmr';
+        $this->uploadsUrl  = wp_upload_dir()['baseurl'] . '/' . 'scw-vite-hmr';
 
-        if (!file_exists(self::$uploadsPath)) wp_mkdir_p(self::$uploadsPath);
+        if (!file_exists($this->uploadsPath)) wp_mkdir_p($this->uploadsPath);
 
-        self::setupFilters();
+        $this->setupFilters();
     }
 
-    public static function getVite(): ViteAdapter
+    public function getVite(): ViteAdapter
     {
-        return self::$vite;
+        return $this->vite;
     }
 
-    public static function enqueue($args = [])
+    public function enqueue($args = [])
     {
-        $uploadsPath = self::$uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
-        $uploadsUrl = self::$uploadsUrl . "/" . $args['namespace'];
+        $uploadsPath = $this->uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
+        $uploadsUrl = $this->uploadsUrl . "/" . $args['namespace'];
         $buildDirectory = $args['buildDirectory'] ?? 'build';
 
         if (!file_exists($uploadsPath)) {
             throw new \Exception("Directory \"" . $uploadsPath . "\" could not be found");
         }
 
-        self::validateArgs($args);
+        $this->validateArgs($args);
 
 
-        self::$vite = new ViteAdapter([
+        $this->vite = new ViteAdapter([
             'uploadsPath' => $uploadsPath,
             'uploadsUrl' => $uploadsUrl,
             'hotFile' => $args['hotFile'] ?? 'hot',
@@ -52,12 +53,12 @@ class WpVite
                 throw new \Exception("No valid input files received");
             }
             foreach ($inputs as $input) {
-                echo self::$vite->generateTags($input, $buildDirectory);
+                echo $this->vite->generateTags($input, $buildDirectory);
             }
         });
     }
 
-    public static function validateArgs(array $args): bool
+    public function validateArgs(array $args): bool
     {
         if (!isset($args['input'])) {
             throw new \Exception("No 'input' found");
@@ -67,9 +68,12 @@ class WpVite
         return true;
     }
 
-    public static function setupFilters(): void
+    public function setupFilters(): void
     {
-        add_filter('script_loader_tag', [__CLASS__, 'addScriptAttributes'], 10, 2);
+        if (self::$init === true) return;
+
+        add_filter('script_loader_tag', [$this, 'addScriptAttributes'], 10, 2);
+        self::$init = true;
     }
 
     /**
@@ -77,7 +81,7 @@ class WpVite
      *
      * @filter script_loader_tag
      */
-    public static function addScriptAttributes(string $tag, string $handle): string
+    public function addScriptAttributes(string $tag, string $handle): string
     {
         $attributes = ['type', 'async', 'crossorigin', 'defer', 'fetchpriority', 'integrity', 'nomodule', 'nonce', 'referrerpolicy', 'blocking'];
         $tag = preg_replace("/type=['\"]text\/(javascript|css)['\"]/", '', $tag);
@@ -89,5 +93,11 @@ class WpVite
         }
 
         return $tag;
+    }
+
+    public static function __callStatic($method, $args)
+    {
+        $instance = new static;
+        return $instance->$method(...$args);
     }
 }
