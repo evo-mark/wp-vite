@@ -31,6 +31,16 @@ class WpVite
         $uploadsUrl = $this->uploadsUrl . "/" . $args['namespace'];
         $buildDirectory = $args['buildDirectory'] ?? 'build';
 
+        $absolutePath = isset($args['absolutePath']) ? $args['absolutePath'] : null;
+        $absoluteUrl = isset($args['absoluteUrl']) ? $args['absoluteUrl'] : null;
+
+        if (!empty($absolutePath) && !empty($absoluteUrl)) {
+            $uploadsPath = $absolutePath;
+            $uploadsUrl = $absoluteUrl;
+        } else if (!empty($absolutePath) || !empty($absoluteUrl)) {
+            throw new \Exception("You must pass both 'absolutePath' and 'absoluteUrl' to use manual definitions");
+        }
+
         if (!file_exists($uploadsPath)) {
             throw new \Exception("Directory \"" . $uploadsPath . "\" could not be found");
         }
