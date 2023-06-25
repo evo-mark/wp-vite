@@ -52,7 +52,8 @@ class WpVite
             'uploadsPath' => $uploadsPath,
             'uploadsUrl' => $uploadsUrl,
             'hotFile' => $args['hotFile'] ?? 'hot',
-            'dependencies' => $args['dependencies'] ?? []
+            'dependencies' => $args['dependencies'] ?? [],
+            'namespace' => $args['namespace']
         ]);
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';

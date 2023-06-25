@@ -67,6 +67,11 @@ class ViteAdapter
      */
     protected static array $manifests = [];
 
+    public function __construct(array $configArray)
+    {
+        $this->config = new ViteConfig($configArray);
+    }
+
     /**
      * Get the preloaded assets.
      */
@@ -191,11 +196,6 @@ class ViteAdapter
         return $this;
     }
 
-    public function __construct(array $configArray)
-    {
-        $this->config = new ViteConfig($configArray);
-    }
-
     /**
      * Generate Vite tags for an entrypoint.
      */
@@ -305,9 +305,17 @@ class ViteAdapter
         return implode("\n", $preloads) . "\n";
     }
 
+    private function createHandle($multiEntry, $index)
+    {
+        $suffix = $multiEntry ? "-" . $index + 1 : "";
+        return $this->config->namespace . $suffix;
+    }
+
     public function enqueueScripts(array $scripts, string $hash)
     {
-        foreach ($scripts as $script) {
+        $multiEntry = count($scripts) > 1;
+
+        foreach ($scripts as $index => $script) {
             $attributes = [];
             $dom = new DOMDocument();
             $dom->loadHTML($script);
@@ -315,9 +323,8 @@ class ViteAdapter
             foreach ($node->item(0)->attributes as $key => $obj) {
                 $attributes[$key] = $obj->value;
             }
-            $attributesArray = explode("/", $attributes['src']);
-            $handle = array_pop($attributesArray);
-            $handle = str_replace(".js", "-js", $handle);
+
+            $handle = $this->createHandle($multiEntry, $index);
             wp_register_script($handle, $attributes['src'], $this->config->dependencies, $hash, true);
             unset($attributes['src']);
             wp_enqueue_script($handle);
@@ -440,6 +447,7 @@ class ViteAdapter
      */
     protected function makeScriptTagWithAttributes(string $url, array $attributes): string
     {
+        wp_register_script($this->config->namespace . '-js', $url);
         $attributes = $this->parseAttributes(array_merge([
             'type' => 'module',
             'src' => $url,
