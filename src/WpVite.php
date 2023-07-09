@@ -71,7 +71,7 @@ class WpVite
             'hotFile' => $args['hotFile'] ?? 'hot',
             'dependencies' => $args['dependencies'] ?? [],
             'namespace' => $args['namespace'],
-            'entryHandle' => $args['entryHandle'] ?? ""
+            'entryHandle' => $args['entryHandle'] ?? "",
         ]);
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
@@ -84,7 +84,7 @@ class WpVite
             foreach ($inputs as $input) {
                 echo $this->vite->generateTags($input, $buildDirectory);
             }
-        });
+        }, $args['priority'] ?? 10);
     }
 
     public function validateArgs(array $args): bool
