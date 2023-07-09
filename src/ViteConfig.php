@@ -10,6 +10,7 @@ class ViteConfig
     public array $dependencies;
     public string $namespace;
     public bool $footer;
+    public string $entryHandle;
 
     public function __construct(array $configArray)
     {
@@ -19,5 +20,6 @@ class ViteConfig
         $this->dependencies = $configArray['dependencies'] ?? [];
         $this->namespace = $configArray['namespace'] ?? "";
         $this->footer = $configArray['footer'] ?? false;
+        $this->entryHandle = $configArray['entryHandle'] ?? null;
     }
 }

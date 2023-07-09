@@ -25,6 +25,23 @@ class WpVite
         return $this->vite;
     }
 
+    /**
+     * Main enqueue function for both styles and scripts
+     *
+     * The $args array should have the following structure:
+     * array(
+     *     'input' => (string) Description of option1,
+     *     'namespace' => (string) Description of option1,
+     *     'buildDirectory' => (int) Description of option2,
+     *     'absolutePath' => (string) Manually override the entire path
+     *     'absoluteUrl' => (string) Manually override the entire URL
+     *     'hotFile' => (string) Filename to use for the hotfile
+     *     'dependencies' => (array) List of dependencies
+     *     'admin' => (bool) Only enqueue the asset on admin pages
+     * )
+     *
+     * @param array $args The configuration options
+     */
     public function enqueue($args = [])
     {
         $uploadsPath = $this->uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
@@ -53,7 +70,8 @@ class WpVite
             'uploadsUrl' => $uploadsUrl,
             'hotFile' => $args['hotFile'] ?? 'hot',
             'dependencies' => $args['dependencies'] ?? [],
-            'namespace' => $args['namespace']
+            'namespace' => $args['namespace'],
+            'entryHandle' => $args['entryHandle']
         ]);
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';

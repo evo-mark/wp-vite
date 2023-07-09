@@ -307,6 +307,10 @@ class ViteAdapter
 
     private function createHandle($multiEntry, $index)
     {
+        if ($multiEntry === false && !empty($this->config->entryHandle)) {
+            return $this->config->entryHandle;
+        }
+
         $suffix = $multiEntry ? "-" . $index + 1 : "";
         return $this->config->namespace . $suffix;
     }
