@@ -9,6 +9,7 @@ class WpVite
     public $uploadsPath;
     public $uploadsUrl;
     public static $init = false;
+    public bool $hasAbsolutes = false;
 
     public function __construct()
     {
@@ -44,30 +45,25 @@ class WpVite
      */
     public function enqueue($args = [])
     {
-        $uploadsPath = $this->uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
-        $uploadsUrl = $this->uploadsUrl . "/" . $args['namespace'];
-        $buildDirectory = $args['buildDirectory'] ?? 'build';
-
-        $absolutePath = isset($args['absolutePath']) ? $args['absolutePath'] : null;
-        $absoluteUrl = isset($args['absoluteUrl']) ? $args['absoluteUrl'] : null;
-
-        if (!empty($absolutePath) && !empty($absoluteUrl)) {
-            $uploadsPath = $absolutePath;
-            $uploadsUrl = $absoluteUrl;
-        } else if (!empty($absolutePath) || !empty($absoluteUrl)) {
-            throw new \Exception("You must pass both 'absolutePath' and 'absoluteUrl' to use manual definitions");
-        }
-
-        if (!file_exists($uploadsPath)) {
-            throw new \Exception("Directory \"" . $uploadsPath . "\" could not be found");
-        }
-
         $this->validateArgs($args);
 
+        if ($this->hasAbsolutes) {
+            $this->uploadsPath = $args['absolutePath'];
+            $this->uploadsUrl = $args['absoluteUrl'];
+        } else {
+            $this->uploadsPath = $this->uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
+            $this->uploadsUrl = $this->uploadsUrl . "/" . $args['namespace'];
+        }
+
+        $buildDirectory = $args['buildDirectory'] ?? 'build';
+
+        if (!file_exists($this->uploadsPath)) {
+            throw new \Exception("Directory \"" . $this->uploadsPath . "\" could not be found. Please ensure that your frontend build process is outputting to the same path.");
+        }
 
         $this->vite = new ViteAdapter([
-            'uploadsPath' => $uploadsPath,
-            'uploadsUrl' => $uploadsUrl,
+            'uploadsPath' => $this->uploadsPath,
+            'uploadsUrl' => $this->uploadsUrl,
             'hotFile' => $args['hotFile'] ?? 'hot',
             'dependencies' => $args['dependencies'] ?? [],
             'namespace' => $args['namespace'],
@@ -87,13 +83,20 @@ class WpVite
         }, $args['priority'] ?? 10);
     }
 
+    /**
+     * Ensure that user has provided sensible config settings that adhere to the needed types
+     *
+     * @param  array $args
+     * @return bool
+     */
     public function validateArgs(array $args): bool
     {
-        if (!isset($args['input'])) {
-            throw new \Exception("No 'input' found");
-        } else if (!isset($args['namespace']) || empty($args['namespace'])) {
-            throw new \Exception("No 'namespace' found");
-        }
+        $this->checkAbsolutes($args);
+        $this->checkInput($args);
+        $this->checkNamespace($args);
+        $this->checkPriority($args);
+        $this->checkAdmin($args);
+        $this->checkDependencies($args);
         return true;
     }
 
@@ -122,6 +125,54 @@ class WpVite
         }
 
         return $tag;
+    }
+
+    private function checkAbsolutes(array $args): void
+    {
+        if (isset($args['absolutePath']) || isset($args['absoluteUrl'])) {
+            $this->hasAbsolutes = true;
+        }
+
+        if ($this->hasAbsolutes && (!isset($args['absolutePath']) || !isset($args['absoluteUrl']))) {
+            throw new \Exception("You must pass both 'absolutePath' and 'absoluteUrl' to use manual definitions");
+        }
+    }
+
+    private function checkInput(array $args): void
+    {
+        if (!isset($args['input'])) {
+            throw new \Exception("No 'input' found");
+        }
+    }
+
+    private function checkNamespace(array $args): void
+    {
+        if ((!$this->hasAbsolutes && empty($args['namespace'])) ||
+            ($this->hasAbsolutes && empty($args['namespace']))
+        ) {
+            throw new \Exception("A 'namespace' is required");
+        }
+    }
+
+    private function checkPriority(array $args): void
+    {
+        if (isset($args['priority']) && !is_int($args['priority'])) {
+            throw new \Exception("Priority must be an integer");
+        }
+    }
+
+    private function checkAdmin(array $args): void
+    {
+        if (isset($args['admin']) && !is_bool($args['admin'])) {
+            throw new \Exception("Admin argument must be a boolean");
+        }
+    }
+
+    private function checkDependencies(array $args): void
+    {
+        if (isset($args['dependencies']) && !is_array($args['dependencies'])) {
+            throw new \Exception("Dependencies must be an array");
+        }
     }
 
     public static function __callStatic($method, $args)
