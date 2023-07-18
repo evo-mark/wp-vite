@@ -1,6 +1,6 @@
 <?php
 
-namespace Southcoastweb\WpVite;
+namespace EvoMark\WpVite;
 
 use DOMDocument;
 use Exception;
