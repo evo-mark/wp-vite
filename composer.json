@@ -1,5 +1,5 @@
 {
-  "name": "southcoastweb/wp-vite",
+  "name": "evo-mark/wp-vite",
   "type": "wordpress-plugin",
   "license": "MIT",
   "autoload": {
