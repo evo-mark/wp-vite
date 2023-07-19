@@ -1,10 +1,10 @@
 {
-  "name": "southcoastweb/wp-vite",
+  "name": "evo-mark/wp-vite",
   "type": "wordpress-plugin",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Southcoastweb\\WpVite\\": "src/"
+      "EvoMark\\WpVite\\": "src/"
     }
   },
   "authors": [
