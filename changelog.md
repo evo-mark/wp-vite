@@ -1,3 +1,7 @@
+### 1.0.1
+
+- **BugFix**: New Vite5 manifest structure causing error
+
 ### 0.3.1
 
 - Refactored usort functions to use integer returns

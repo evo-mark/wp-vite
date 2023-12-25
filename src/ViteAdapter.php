@@ -264,25 +264,23 @@ class ViteAdapter
                 $manifest
             );
 
-
             foreach ($chunk['css'] ?? [] as $css) {
                 $partialManifest = array_filter($manifest, fn ($item) => $item['file'] == $css);
 
                 $partialManifestKeys = array_keys($partialManifest);
                 $partialManifestValues = array_values($partialManifest);
 
-
                 $preloads[] = array(
-                    $partialManifestKeys[0],
+                    $partialManifestKeys[0] ?? null,
                     $this->assetPath("{$buildDirectory}/{$css}"),
-                    $partialManifestValues[0],
+                    $partialManifestValues[0] ?? null,
                     $manifest
                 );
 
                 $tags[] = $this->makeTagForChunk(
-                    $partialManifestKeys[0],
+                    $partialManifestKeys[0] ?? null,
                     $this->assetPath("{$buildDirectory}/{$css}"),
-                    $partialManifestValues[0],
+                    $partialManifestValues[0] ?? null,
                     $manifest
                 );
             }
@@ -391,9 +389,15 @@ class ViteAdapter
 
     /**
      * Make tag for the given chunk.
+     * @param string|null $src The relative (imported) path of the resource
+     * @param string|null $url The URI of the resource
+     * @param array|null $chunk The chunk array
+     * @param array $manifest The Vite manifest
      */
-    protected function makeTagForChunk(string $src, string $url, array|null $chunk, array|null $manifest): string
+    protected function makeTagForChunk(string|null $src, string|null $url, array|null $chunk, array|null $manifest): string
     {
+        if (empty($url)) return "";
+
         if (
             (!isset($this->nonce) ||
                 $this->nonce === null)
@@ -544,8 +548,10 @@ class ViteAdapter
     /**
      * Make a preload tag for the given chunk.
      */
-    protected function makePreloadTagForChunk(string $src, string $url, array $chunk, array $manifest): string
+    protected function makePreloadTagForChunk(string|null $src, string|null $url, array|null $chunk, array $manifest): string
     {
+        if (empty($url)) return "";
+
         $manifestHash = hash('md5', json_encode($manifest));
         $url .= "?ver=" . $manifestHash;
 
@@ -622,8 +628,12 @@ class ViteAdapter
     /**
      * Resolve the attributes for the chunks generated stylesheet tag.
      */
-    protected function resolveStylesheetTagAttributes(string $src, string $url, array $chunk, array $manifest): array
+    protected function resolveStylesheetTagAttributes(string|null $src, string|null $url, array|null $chunk, array $manifest): array
     {
+        if (empty($chunk)) {
+            return [];
+        }
+
         $attributes = $this->integrityKey !== false
             ? ['integrity' => $chunk[$this->integrityKey] ?? false]
             : [];

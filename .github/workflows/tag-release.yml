@@ -61,7 +61,7 @@ jobs:
           command: composer install --no-interaction --no-scripts --no-plugins
 
       - name: Create ZIP for release
-        run: zip -r southcoastweb-wp-vite.zip . -x "*.DS_Store*" -x ".github/*" -x ".git/*" -x ".gitignore"
+        run: zip -r evomark-wp-vite.zip . -x "*.DS_Store*" -x ".github/*" -x ".git/*" -x ".gitignore"
 
       - name: Create Github release
         id: create_release
@@ -81,6 +81,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./southcoastweb-wp-vite.zip
-          asset_name: southcoastweb-wp-vite.zip
+          asset_path: ./evomark-wp-vite.zip
+          asset_name: evomark-wp-vite.zip
           asset_content_type: application/zip
