@@ -58,7 +58,12 @@ class WpVite
         $buildDirectory = $args['buildDirectory'] ?? 'build';
 
         if (!file_exists($this->uploadsPath)) {
-            throw new \Exception("Directory \"" . $this->uploadsPath . "\" could not be found. Please ensure that your frontend build process is outputting to the same path.");
+            try {
+                wp_mkdir_p($this->uploadsPath);
+            }
+            catch (\Exception $e) {
+                throw new \Exception("Directory \"" . $this->uploadsPath . "\" could not be created. Please ensure that your frontend build process is outputting to the same path.");
+            }
         }
 
         $this->vite = new ViteAdapter([
