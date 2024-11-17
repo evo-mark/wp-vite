@@ -77,7 +77,7 @@ class WpVite
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
 
-        add_action($hook, function () use ($buildDirectory, $args) {
+        $callback = function () use ($buildDirectory, $args) {
             $inputs = is_array($args['input']) ? $args['input'] : (array) $args['input'];
             if (count($inputs) === 0) {
                 throw new \Exception("No valid input files received");
@@ -85,7 +85,19 @@ class WpVite
             foreach ($inputs as $input) {
                 echo $this->vite->generateTags($input, $buildDirectory);
             }
-        }, $args['priority'] ?? 10);
+        };
+
+        // If we're already in the needed hook, attempt to enqueue anyway
+        if (
+            did_action($hook) && 
+            did_action('wp_head') === false && 
+            did_action('admin_print_scripts') === false
+        ) {
+            $callback();
+        } else {
+            add_action($hook, $callback, $args['priority'] ?? 10);
+        }
+
     }
 
     /**
