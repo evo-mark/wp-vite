@@ -1,3 +1,12 @@
+### 1.1.1
+
+- **BugFix**: Don't do strict boolean checking on `did_action`
+
+### 1.1.0
+
+- **Improvement**: Allow script injection if already on the enqueue hook
+- **Improvement**: Readme and licence file updates
+
 ### 1.0.1
 
 - **BugFix**: New Vite5 manifest structure causing error

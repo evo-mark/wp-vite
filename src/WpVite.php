@@ -90,8 +90,8 @@ class WpVite
         // If we're already in the needed hook, attempt to enqueue anyway
         if (
             did_action($hook) && 
-            did_action('wp_head') === false && 
-            did_action('admin_print_scripts') === false
+            ! did_action('wp_head') && 
+            ! did_action('admin_print_scripts')
         ) {
             $callback();
         } else {
