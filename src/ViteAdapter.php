@@ -91,7 +91,7 @@ class ViteAdapter
     /**
      * Generate or set a Content Security Policy nonce to apply to all generated tags.
      */
-    public function useCspNonce(string $nonce = null): string
+    public function useCspNonce(?string $nonce = null): string
     {
         return $this->nonce = $nonce ?? wp_create_nonce('vite-hmr');
     }
@@ -221,7 +221,7 @@ class ViteAdapter
     /**
      * Generate Vite tags for an entrypoint.
      */
-    public function generateTags(array|string $entrypoints, string $buildDirectory = null)
+    public function generateTags(array|string $entrypoints, ?string $buildDirectory = null)
     {
         $entrypoints = is_array($entrypoints) ? $entrypoints : array($entrypoints);
         $buildDirectory ??= $this->buildDirectory;
@@ -549,7 +549,7 @@ class ViteAdapter
     /**
      * Get the URL for an asset.
      */
-    public function asset(string $asset, string $buildDirectory = null): string
+    public function asset(string $asset, ?string $buildDirectory = null): string
     {
         $buildDirectory ??= $this->buildDirectory;
 
@@ -565,7 +565,7 @@ class ViteAdapter
     /**
      * Generate an asset path for the application.
      */
-    protected function assetPath(string $path, bool $secure = null): string
+    protected function assetPath(string $path, ?bool $secure = null): string
     {
         return $this->config->uploadsUrl . '/' . $path;
     }

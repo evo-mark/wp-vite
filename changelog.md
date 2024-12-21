@@ -1,3 +1,7 @@
+### 1.2.1
+
+- **BugFix**: Correct implicit null parameters
+
 ### 1.2.0
 
 - **Feature**: Add support for React dev server
