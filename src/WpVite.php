@@ -39,6 +39,7 @@ class WpVite
      *     'hotFile' => (string) Filename to use for the hotfile
      *     'dependencies' => (array) List of dependencies
      *     'admin' => (bool) Only enqueue the asset on admin pages
+     *     'react' => (bool) Use the react dev server in HMR mode
      * )
      *
      * @param array $args The configuration options
@@ -73,6 +74,7 @@ class WpVite
             'dependencies' => $args['dependencies'] ?? [],
             'namespace' => $args['namespace'],
             'entryHandle' => $args['entryHandle'] ?? "",
+            'useReact' => $args['react'] ?? false
         ]);
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';

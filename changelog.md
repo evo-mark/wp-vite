@@ -1,3 +1,7 @@
+### 1.2.0
+
+- **Feature**: Add support for React dev server
+
 ### 1.1.1
 
 - **BugFix**: Don't do strict boolean checking on `did_action`

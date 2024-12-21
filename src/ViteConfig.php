@@ -11,6 +11,7 @@ class ViteConfig
     public string $namespace;
     public bool $footer;
     public string $entryHandle;
+    public bool $useReact;
 
     public function __construct(array $configArray)
     {
@@ -21,5 +22,6 @@ class ViteConfig
         $this->namespace = $configArray['namespace'] ?? "";
         $this->footer = $configArray['footer'] ?? false;
         $this->entryHandle = $configArray['entryHandle'] ?? "";
+        $this->useReact = $configArray['useReact'] ?? false;
     }
 }

@@ -197,6 +197,28 @@ class ViteAdapter
     }
 
     /**
+     * Inject required code for React to run in dev/HMR mode
+     */
+    private function reactRefresh(): array
+    {
+        if ($this->config->useReact !== true) return [];
+
+        return [sprintf(
+            <<<'HTML'
+            <script type="module" %s>
+                import RefreshRuntime from '%s';
+                RefreshRuntime.injectIntoGlobalHook(window);
+                window.$RefreshReg$ = () => {};
+                window.$RefreshSig$ = () => (type) => type;
+                window.__vite_plugin_react_preamble_installed__ = true;
+            </script>
+        HTML,
+            "",
+            $this->hotAsset('@react-refresh')
+        )];
+    }
+
+    /**
      * Generate Vite tags for an entrypoint.
      */
     public function generateTags(array|string $entrypoints, string $buildDirectory = null)
@@ -205,8 +227,11 @@ class ViteAdapter
         $buildDirectory ??= $this->buildDirectory;
 
         if ($this->isRunningHot()) {
+            $reactRefresh = $this->reactRefresh();
+
             $entrypoints = ['@vite/client', ...$entrypoints];
             $entryTags = array_map(fn ($entrypoint) => $this->makeTagForChunk($entrypoint, $this->hotAsset($entrypoint), null, null), $entrypoints);
+            $entryTags = array_merge($reactRefresh, $entryTags);
             return implode("", $entryTags);
         }
 
