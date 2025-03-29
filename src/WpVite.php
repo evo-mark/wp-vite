@@ -6,17 +6,19 @@ class WpVite
 {
     public $type;
     public $vite;
-    public $uploadsPath;
-    public $uploadsUrl;
+    public $viteDistPath;
+    public $viteDistUri;
     public static $init = false;
     public bool $hasAbsolutes = false;
 
     public function __construct()
     {
-        $this->uploadsPath  = wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'scw-vite-hmr';
-        $this->uploadsUrl  = wp_upload_dir()['baseurl'] . '/' . 'scw-vite-hmr';
+        $this->viteDistPath = apply_filters('vite_dist_path', wp_upload_dir()['basedir'] . DIRECTORY_SEPARATOR . 'scw-vite-hmr');
+        $this->viteDistUri  = apply_filters('vite_dist_uri', wp_upload_dir()['baseurl'] . '/' . 'scw-vite-hmr');
 
-        if (!file_exists($this->uploadsPath)) wp_mkdir_p($this->uploadsPath);
+        if (!file_exists($this->viteDistPath)) {
+            wp_mkdir_p($this->viteDistPath);
+        }
 
         $this->setupFilters();
     }
@@ -49,27 +51,26 @@ class WpVite
         $this->validateArgs($args);
 
         if ($this->hasAbsolutes) {
-            $this->uploadsPath = $args['absolutePath'];
-            $this->uploadsUrl = $args['absoluteUrl'];
+            $this->viteDistPath = $args['absolutePath'];
+            $this->viteDistUri = $args['absoluteUrl'];
         } else {
-            $this->uploadsPath = $this->uploadsPath . DIRECTORY_SEPARATOR  . $args['namespace'];
-            $this->uploadsUrl = $this->uploadsUrl . "/" . $args['namespace'];
+            $this->viteDistPath = $this->viteDistPath . DIRECTORY_SEPARATOR  . $args['namespace'];
+            $this->viteDistUri = $this->viteDistUri . "/" . $args['namespace'];
         }
 
         $buildDirectory = $args['buildDirectory'] ?? 'build';
 
-        if (!file_exists($this->uploadsPath)) {
+        if (!file_exists($this->viteDistPath)) {
             try {
-                wp_mkdir_p($this->uploadsPath);
-            }
-            catch (\Exception $e) {
-                throw new \Exception("Directory \"" . $this->uploadsPath . "\" could not be created. Please ensure that your frontend build process is outputting to the same path.");
+                wp_mkdir_p($this->viteDistPath);
+            } catch (\Exception $e) {
+                throw new \Exception("Directory \"" . $this->viteDistPath . "\" could not be created. Please ensure that your frontend build process is outputting to the same path.");
             }
         }
 
         $this->vite = new ViteAdapter([
-            'uploadsPath' => $this->uploadsPath,
-            'uploadsUrl' => $this->uploadsUrl,
+            'viteDistPath' => $this->viteDistPath,
+            'viteDistUri' => $this->viteDistUri,
             'hotFile' => $args['hotFile'] ?? 'hot',
             'dependencies' => $args['dependencies'] ?? [],
             'namespace' => $args['namespace'],
@@ -91,8 +92,8 @@ class WpVite
 
         // If we're already in the needed hook, attempt to enqueue anyway
         if (
-            did_action($hook) && 
-            ! did_action('wp_head') && 
+            did_action($hook) &&
+            ! did_action('wp_head') &&
             ! did_action('admin_print_scripts')
         ) {
             $callback();
@@ -121,7 +122,9 @@ class WpVite
 
     public function setupFilters(): void
     {
-        if (self::$init === true) return;
+        if (self::$init === true) {
+            return;
+        }
 
         add_filter('script_loader_tag', [$this, 'addScriptAttributes'], 10, 2);
         self::$init = true;

@@ -131,7 +131,7 @@ class ViteAdapter
      */
     public function hotFile(): string
     {
-        return $this->config->uploadsPath . '/' . $this->config->hotFile;
+        return $this->config->viteDistPath . '/' . $this->config->hotFile;
     }
 
     /**
@@ -201,7 +201,9 @@ class ViteAdapter
      */
     private function reactRefresh(): array
     {
-        if ($this->config->useReact !== true) return [];
+        if ($this->config->useReact !== true) {
+            return [];
+        }
 
         return [sprintf(
             <<<'HTML'
@@ -391,7 +393,7 @@ class ViteAdapter
      */
     protected function manifestPath(string $buildDirectory): string
     {
-        return $this->config->uploadsPath . '/' . $buildDirectory . '/' . $this->manifestFilename;
+        return $this->config->viteDistPath . '/' . $buildDirectory . '/' . $this->manifestFilename;
     }
 
     /**
@@ -421,7 +423,9 @@ class ViteAdapter
      */
     protected function makeTagForChunk(string|null $src, string|null $url, array|null $chunk, array|null $manifest): string
     {
-        if (empty($url)) return "";
+        if (empty($url)) {
+            return "";
+        }
 
         if (
             (!isset($this->nonce) ||
@@ -567,7 +571,7 @@ class ViteAdapter
      */
     protected function assetPath(string $path, ?bool $secure = null): string
     {
-        return $this->config->uploadsUrl . '/' . $path;
+        return $this->config->viteDistUri . '/' . $path;
     }
 
     /**
@@ -575,7 +579,9 @@ class ViteAdapter
      */
     protected function makePreloadTagForChunk(string|null $src, string|null $url, array|null $chunk, array $manifest): string
     {
-        if (empty($url)) return "";
+        if (empty($url)) {
+            return "";
+        }
 
         $manifestHash = hash('md5', json_encode($manifest));
         $url .= "?ver=" . $manifestHash;
