@@ -61,8 +61,7 @@ class WpVite
         if (!file_exists($this->uploadsPath)) {
             try {
                 wp_mkdir_p($this->uploadsPath);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 throw new \Exception("Directory \"" . $this->uploadsPath . "\" could not be created. Please ensure that your frontend build process is outputting to the same path.");
             }
         }
@@ -74,7 +73,8 @@ class WpVite
             'dependencies' => $args['dependencies'] ?? [],
             'namespace' => $args['namespace'],
             'entryHandle' => $args['entryHandle'] ?? "",
-            'useReact' => $args['react'] ?? false
+            'useReact' => $args['react'] ?? false,
+            'disableModule' => $args['disableModule'] ?? false
         ]);
 
         $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
@@ -91,15 +91,14 @@ class WpVite
 
         // If we're already in the needed hook, attempt to enqueue anyway
         if (
-            did_action($hook) && 
-            ! did_action('wp_head') && 
+            did_action($hook) &&
+            ! did_action('wp_head') &&
             ! did_action('admin_print_scripts')
         ) {
             $callback();
         } else {
             add_action($hook, $callback, $args['priority'] ?? 10);
         }
-
     }
 
     /**

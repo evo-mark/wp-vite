@@ -160,7 +160,7 @@ class ViteAdapter
     public function useScriptTagAttributes(callable|array $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
-            $attributes = fn () => $attributes;
+            $attributes = fn() => $attributes;
         }
 
         $this->scriptTagAttributesResolvers[] = $attributes;
@@ -174,7 +174,7 @@ class ViteAdapter
     public function useStyleTagAttributes(callable|array $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
-            $attributes = fn () => $attributes;
+            $attributes = fn() => $attributes;
         }
 
         $this->styleTagAttributesResolvers[] = $attributes;
@@ -188,7 +188,7 @@ class ViteAdapter
     public function usePreloadTagAttributes(callable|array|false $attributes): ViteAdapter
     {
         if (!is_callable($attributes)) {
-            $attributes = fn () => $attributes;
+            $attributes = fn() => $attributes;
         }
 
         $this->preloadTagAttributesResolvers[] = $attributes;
@@ -230,7 +230,7 @@ class ViteAdapter
             $reactRefresh = $this->reactRefresh();
 
             $entrypoints = ['@vite/client', ...$entrypoints];
-            $entryTags = array_map(fn ($entrypoint) => $this->makeTagForChunk($entrypoint, $this->hotAsset($entrypoint), null, null), $entrypoints);
+            $entryTags = array_map(fn($entrypoint) => $this->makeTagForChunk($entrypoint, $this->hotAsset($entrypoint), null, null), $entrypoints);
             $entryTags = array_merge($reactRefresh, $entryTags);
             return implode("", $entryTags);
         }
@@ -261,7 +261,7 @@ class ViteAdapter
                 );
 
                 foreach ($manifest[$import]['css'] ?? [] as $css) {
-                    $partialManifest = array_filter($manifest, fn ($item) => $item['file'] == $css);
+                    $partialManifest = array_filter($manifest, fn($item) => $item['file'] == $css);
 
                     $partialManifestKeys = array_keys($partialManifest);
                     $partialManifestValues = array_values($partialManifest);
@@ -290,7 +290,7 @@ class ViteAdapter
             );
 
             foreach ($chunk['css'] ?? [] as $css) {
-                $partialManifest = array_filter($manifest, fn ($item) => $item['file'] == $css);
+                $partialManifest = array_filter($manifest, fn($item) => $item['file'] == $css);
 
                 $partialManifestKeys = array_keys($partialManifest);
                 $partialManifestValues = array_values($partialManifest);
@@ -312,15 +312,15 @@ class ViteAdapter
         }
 
         $tags = array_unique($tags);
-        $stylesheets = array_filter($tags, fn ($tag) => str_starts_with($tag, '<link'));
-        $scripts = array_filter($tags, fn ($tag) => str_starts_with($tag, '<link') === false);
+        $stylesheets = array_filter($tags, fn($tag) => str_starts_with($tag, '<link'));
+        $scripts = array_filter($tags, fn($tag) => str_starts_with($tag, '<link') === false);
 
-        $preloadsJson = array_map(fn ($pre) => json_encode($pre), $preloads);
+        $preloadsJson = array_map(fn($pre) => json_encode($pre), $preloads);
         $preloadsJson = array_unique($preloadsJson);
-        $preloads = array_map(fn ($pre) => json_decode($pre, true), $preloadsJson);
+        $preloads = array_map(fn($pre) => json_decode($pre, true), $preloadsJson);
 
-        usort($preloads, fn ($args) => $this->isCssPath($args[1]) ? 1 : -1);
-        $preloads = array_map(fn ($args) => $this->makePreloadTagForChunk(...$args), $preloads);
+        usort($preloads, fn($args) => $this->isCssPath($args[1]) ? 1 : -1);
+        $preloads = array_map(fn($args) => $this->makePreloadTagForChunk(...$args), $preloads);
 
         $this->enqueueScripts($scripts, $manifestHash);
         $this->enqueueStylesheets($stylesheets, $manifestHash);
@@ -481,11 +481,14 @@ class ViteAdapter
     protected function makeScriptTagWithAttributes(string $url, array $attributes): string
     {
         wp_register_script($this->config->namespace . '-js', $url);
-        $attributes = $this->parseAttributes(array_merge([
-            'type' => 'module',
+        $baseAttributes = [
             'src' => $url,
             'nonce' => $this->nonce ?? false,
-        ], $attributes));
+        ];
+        if ($this->config->disableModule !== true) {
+            $baseAttributes['type'] = "module";
+        }
+        $attributes = $this->parseAttributes(array_merge($baseAttributes, $attributes));
 
         return '<script ' . implode(' ', $attributes) . '></script>';
     }
@@ -520,9 +523,9 @@ class ViteAdapter
      */
     protected function parseAttributes(array $attributes): array
     {
-        $attributes = array_filter($attributes, fn ($value) => in_array($value, [false, null], true) === false);
-        $attributes = array_merge([], ...array_map(fn (string $key, string $value) => $value === true ? [$key] : [$key => $value], array_keys($attributes), array_values($attributes)));
-        $attributes = array_map(fn ($key, $value) => is_int($key) ? $value : $key . '="' . $value . '"', array_keys($attributes), array_values($attributes));
+        $attributes = array_filter($attributes, fn($value) => in_array($value, [false, null], true) === false);
+        $attributes = array_merge([], ...array_map(fn(string $key, string $value) => $value === true ? [$key] : [$key => $value], array_keys($attributes), array_values($attributes)));
+        $attributes = array_map(fn($key, $value) => is_int($key) ? $value : $key . '="' . $value . '"', array_keys($attributes), array_values($attributes));
 
         return $attributes;
     }

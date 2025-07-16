@@ -12,6 +12,7 @@ class ViteConfig
     public bool $footer;
     public string $entryHandle;
     public bool $useReact;
+    public bool $disableModule;
 
     public function __construct(array $configArray)
     {
@@ -23,5 +24,6 @@ class ViteConfig
         $this->footer = $configArray['footer'] ?? false;
         $this->entryHandle = $configArray['entryHandle'] ?? "";
         $this->useReact = $configArray['useReact'] ?? false;
+        $this->disableModule = $configArray['disableModule'] ?? false;
     }
 }
