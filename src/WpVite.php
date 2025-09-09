@@ -39,6 +39,7 @@ class WpVite
      *     'hotFile' => (string) Filename to use for the hotfile
      *     'dependencies' => (array) List of dependencies
      *     'admin' => (bool) Only enqueue the asset on admin pages
+     *     'gutenberg' => (bool) Only enqueue the asset on block editor pages
      *     'react' => (bool) Use the react dev server in HMR mode
      * )
      *
@@ -77,7 +78,12 @@ class WpVite
             'disableModule' => $args['disableModule'] ?? false
         ]);
 
-        $hook = isset($args['admin']) && $args['admin'] === true ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
+        $hook = 'wp_enqueue_scripts';
+        if (!empty($args['admin'])) {
+            $hook = 'admin_enqueue_scripts';
+        } else if (!empty($args['gutenberg'])) {
+            $hook = 'enqueue_block_editor_assets';
+        }
 
         $callback = function () use ($buildDirectory, $args) {
             $inputs = is_array($args['input']) ? $args['input'] : (array) $args['input'];
@@ -114,6 +120,7 @@ class WpVite
         $this->checkNamespace($args);
         $this->checkPriority($args);
         $this->checkAdmin($args);
+        $this->checkGutenberg($args);
         $this->checkDependencies($args);
         return true;
     }
@@ -183,6 +190,13 @@ class WpVite
     {
         if (isset($args['admin']) && !is_bool($args['admin'])) {
             throw new \Exception("Admin argument must be a boolean");
+        }
+    }
+
+    private function checkGutenberg(array $args): void
+    {
+        if (isset($args['gutenberg']) && !is_bool($args['gutenberg'])) {
+            throw new \Exception("Gutenberg argument must be a boolean");
         }
     }
 
