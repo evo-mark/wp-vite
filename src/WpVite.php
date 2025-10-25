@@ -79,19 +79,25 @@ class WpVite
         ]);
 
         $hook = 'wp_enqueue_scripts';
+        $echoHook = 'wp_head';
         if (!empty($args['admin'])) {
             $hook = 'admin_enqueue_scripts';
+            $echoHook = 'admin_head';
         } else if (!empty($args['gutenberg'])) {
             $hook = 'enqueue_block_editor_assets';
+            $echoHook = 'admin_head';
         }
 
-        $callback = function () use ($buildDirectory, $args) {
+        $callback = function () use ($buildDirectory, $args, $echoHook) {
             $inputs = is_array($args['input']) ? $args['input'] : (array) $args['input'];
             if (count($inputs) === 0) {
                 throw new \Exception("No valid input files received");
             }
             foreach ($inputs as $input) {
-                echo $this->vite->generateTags($input, $buildDirectory);
+                $preload = $this->vite->generateTags($input, $buildDirectory);
+                add_action($echoHook, function() use ($preload) {
+                    echo $preload;
+                });
             }
         };
 

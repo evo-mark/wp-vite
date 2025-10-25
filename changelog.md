@@ -1,3 +1,7 @@
+### 1.3.2
+
+- **Improvement**: Use separate hook for echoing Vite pre-fetch tags to avoid `headers already sent` warning in dev mode
+
 ### 1.2.1
 
 - **BugFix**: Correct implicit null parameters
