@@ -352,7 +352,7 @@ class ViteAdapter
             }
 
             $handle = $this->createHandle($multiEntry, $index);
-            wp_register_script($handle, $attributes['src'], $this->config->dependencies, $hash, true);
+            wp_register_script($handle, $attributes['src'], $this->config->dependencies, null, true);
             unset($attributes['src']);
             wp_enqueue_script($handle);
             foreach ($attributes as $attr => $val) {
@@ -579,9 +579,6 @@ class ViteAdapter
     protected function makePreloadTagForChunk(string|null $src, string|null $url, array|null $chunk, array $manifest): string
     {
         if (empty($url)) return "";
-
-        $manifestHash = hash('md5', json_encode($manifest));
-        $url .= "?ver=" . $manifestHash;
 
         $attributes = $this->resolvePreloadTagAttributes($src, $url, $chunk, $manifest);
 
