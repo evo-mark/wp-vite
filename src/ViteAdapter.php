@@ -15,7 +15,7 @@ class ViteAdapter
     /**
      * The Content Security Policy nonce to apply to all generated tags.
      */
-    protected string | null $nonce;
+    protected string | null $nonce = null;
 
     /**
      * The key to check for integrity hashes within the manifest.
@@ -241,6 +241,12 @@ class ViteAdapter
         $tags = [];
         $preloads = [];
 
+        // Map output files back to their manifest keys (first match wins)
+        $manifestKeysByFile = [];
+        foreach ($manifest as $key => $item) {
+            $manifestKeysByFile[$item['file']] ??= $key;
+        }
+
         foreach ($entrypoints as $entrypoint) {
             $chunk = $this->chunk($manifest, $entrypoint);
 
@@ -252,7 +258,7 @@ class ViteAdapter
             );
 
 
-            foreach ($chunk['imports'] ?? [] as $import) {
+            foreach ($this->collectImports($manifest, $chunk) as $import) {
                 $preloads[] = array(
                     $import,
                     $this->assetPath("{$buildDirectory}/{$manifest[$import]['file']}"),
@@ -261,22 +267,20 @@ class ViteAdapter
                 );
 
                 foreach ($manifest[$import]['css'] ?? [] as $css) {
-                    $partialManifest = array_filter($manifest, fn($item) => $item['file'] == $css);
-
-                    $partialManifestKeys = array_keys($partialManifest);
-                    $partialManifestValues = array_values($partialManifest);
+                    $cssKey = $manifestKeysByFile[$css] ?? null;
+                    $cssChunk = $cssKey !== null ? $manifest[$cssKey] : null;
 
                     $preloads[] = array(
-                        $partialManifestKeys[0],
+                        $cssKey,
                         $this->assetPath("{$buildDirectory}/{$css}"),
-                        $partialManifestValues[0],
+                        $cssChunk,
                         $manifest
                     );
 
                     $tags[] = $this->makeTagForChunk(
-                        $partialManifestKeys[0],
+                        $cssKey,
                         $this->assetPath("{$buildDirectory}/{$css}"),
-                        $partialManifestValues[0],
+                        $cssChunk,
                         $manifest
                     );
                 }
@@ -290,22 +294,20 @@ class ViteAdapter
             );
 
             foreach ($chunk['css'] ?? [] as $css) {
-                $partialManifest = array_filter($manifest, fn($item) => $item['file'] == $css);
-
-                $partialManifestKeys = array_keys($partialManifest);
-                $partialManifestValues = array_values($partialManifest);
+                $cssKey = $manifestKeysByFile[$css] ?? null;
+                $cssChunk = $cssKey !== null ? $manifest[$cssKey] : null;
 
                 $preloads[] = array(
-                    $partialManifestKeys[0] ?? null,
+                    $cssKey,
                     $this->assetPath("{$buildDirectory}/{$css}"),
-                    $partialManifestValues[0] ?? null,
+                    $cssChunk,
                     $manifest
                 );
 
                 $tags[] = $this->makeTagForChunk(
-                    $partialManifestKeys[0] ?? null,
+                    $cssKey,
                     $this->assetPath("{$buildDirectory}/{$css}"),
-                    $partialManifestValues[0] ?? null,
+                    $cssChunk,
                     $manifest
                 );
             }
@@ -319,13 +321,30 @@ class ViteAdapter
         $preloadsJson = array_unique($preloadsJson);
         $preloads = array_map(fn($pre) => json_decode($pre, true), $preloadsJson);
 
-        usort($preloads, fn($args) => $this->isCssPath($args[1]) ? 1 : -1);
+        usort($preloads, fn($a, $b) => $this->isCssPath($a[1]) <=> $this->isCssPath($b[1]));
         $preloads = array_map(fn($args) => $this->makePreloadTagForChunk(...$args), $preloads);
 
         $this->enqueueScripts($scripts, $manifestHash);
         $this->enqueueStylesheets($stylesheets, $manifestHash);
 
         return implode("\n", $preloads) . "\n";
+    }
+
+    /**
+     * Recursively collect all static imports for a chunk so CSS from nested chunks is included.
+     * Dependencies are listed before the chunks that import them, matching Vite's CSS order.
+     */
+    protected function collectImports(array $manifest, array $chunk, array &$seen = [], array &$ordered = []): array
+    {
+        foreach ($chunk['imports'] ?? [] as $import) {
+            if (isset($seen[$import]) || !isset($manifest[$import])) continue;
+
+            $seen[$import] = true;
+            $this->collectImports($manifest, $manifest[$import], $seen, $ordered);
+            $ordered[] = $import;
+        }
+
+        return $ordered;
     }
 
     private function createHandle($multiEntry, $index)

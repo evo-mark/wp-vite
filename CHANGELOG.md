@@ -1,3 +1,11 @@
+### 1.3.4
+
+- **Improvement**: Build a file-to-key lookup once per `generateTags()` call instead of filtering the whole manifest for every stylesheet
+- **BugFix**: Recursively collect imported chunks so CSS from nested imports is enqueued, in dependency-first order
+- **BugFix**: Fix preload `usort` callback only accepting a single argument, which gave an undefined JS/CSS preload order
+- **BugFix**: Initialise `$nonce` to `null` so `cspNonce()` doesn't throw before a nonce is set
+- **BugFix**: Fall back to `null` when an imported chunk's CSS file has no manifest entry
+
 ### 1.3.2
 
 - **Improvement**: Use separate hook for echoing Vite pre-fetch tags to avoid `headers already sent` warning in dev mode
